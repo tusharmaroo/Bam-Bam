@@ -4,14 +4,81 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
 	<link rel="stylesheet" type="text/css" href="css/bambam.css">
-	<script src="js/three.min.js"></script>
-	<script type="text/javascript">
-
-
-	</script>	
 </head>
 <body>
 	
-	
+	<script src="js/three.min.js"></script>
+	<script type="text/javascript">
+		var scene, camera, renderer;
+		var geometry, material, plane;
+
+		init();
+		animate();
+
+		function init() {
+
+	    scene = new THREE.Scene();
+
+	    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+	    camera.position.z = 25;
+
+	    // geometry = new THREE.BoxGeometry( 200, 200, 200 );
+	    // material = new THREE.MeshBasicMaterial( { color: 0xff0000, wireframe: true } );
+
+	    // mesh = new THREE.Mesh( geometry, material );
+	    // scene.add( mesh );
+
+	    geometry = new THREE.PlaneGeometry( 50, 50, 2, 1 );
+			material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+			plane = new THREE.Mesh( geometry, material );
+				var material = new THREE.MeshBasicMaterial({
+					color: 0x0000ff
+				});
+
+				var radius = 5;
+				var segments = 32;
+
+				var circleGeometry = new THREE.CircleGeometry( radius, segments );				
+				var circle1 = new THREE.Mesh( circleGeometry, material );
+				var circle2 = new THREE.Mesh( circleGeometry, material );
+				var circle3 = new THREE.Mesh( circleGeometry, material );
+				var circle4 = new THREE.Mesh( circleGeometry, material );
+				var circle5 = new THREE.Mesh( circleGeometry, material );
+				circle1.position.x = 0;
+				circle1.position.y = 0;
+				circle2.position.x = 10;
+				circle2.position.y = 10;
+				circle3.position.x = 10;
+				circle3.position.y = -10;
+				circle4.position.x = -10;
+				circle4.position.y = 10;
+				circle5.position.x = -10;
+				circle5.position.y = -10;
+				plane.add( circle1 );
+				plane.add( circle2 );
+				plane.add( circle3 );
+				plane.add( circle4 );
+				plane.add( circle5 );
+			scene.add( plane );
+
+	    renderer = new THREE.CanvasRenderer();
+	    renderer.setSize( window.innerWidth, window.innerHeight );
+
+	    document.body.appendChild( renderer.domElement );
+
+		}
+
+		function animate() {
+
+	    requestAnimationFrame( animate );
+
+	    // plane.rotation.x += 0.01;
+	    plane.rotation.z += 0.02;
+
+	    renderer.render( scene, camera );
+
+		}
+
+	</script>
 </body>
 </html>
