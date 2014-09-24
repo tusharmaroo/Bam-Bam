@@ -6,16 +6,49 @@
 	<link rel="stylesheet" type="text/css" href="css/bambam.css">
 </head>
 <body>
+<div id="hello">
+	<input type="text" id="txt" />
+</div>
+<div id="app"></div>
+
 	
 	<script src="js/three.min.js"></script>
 	<script type="text/javascript">
 		var scene, camera, renderer;
 		var geometry, material, plane;
 		var objects = [];
+		var circles = [];
 		var score = 0;
+		var items = [[0,0],[10,-10],[-10,10],[-10,-10],[10,10]];
+		function randNum(items,excludeNum){
+		    var randNumber = items[Math.floor(Math.random()*items.length)];
+		    if(items[randNumber]==excludeNum){
+		        return randNum(items,excludeNum);
+		    }else{
+		        return randNumber;
+		    }
+		}
+
+		function timedText() {
+	    var x = document.getElementById('txt');
+	    var t1 = setTimeout(function(){x.value = "Time Left: 8 seconds"},2000);
+	    setTimeout(function(){x.value = "Time Left: 7 seconds"},3000);
+	    var t2 = setTimeout(function(){x.value = "Time Left: 6 seconds"},4000);
+	    setTimeout(function(){x.value = "Time Left: 5 seconds"},5000);
+	    var t3 = setTimeout(function(){x.value = "Time Left: 4 seconds"},6000);
+	    setTimeout(function(){x.value = "Time Left: 3 seconds"},7000);
+	    var t4 = setTimeout(function(){x.value = "Time Left: 2 seconds"},8000);
+	    setTimeout(function(){x.value = "Time Left: 1 seconds"},9000);
+	    var t5 = setTimeout(function(){
+	    	x.value = "Time UP!!";
+	    	alert("Time UP!!!");
+	    	window.location.assign("final_score.html?score="+score);
+	    },10000);
+	    
+		}
 		init();
 		animate();
-
+		timedText();
 		function init() {
 
 	    scene = new THREE.Scene();
@@ -30,9 +63,9 @@
 	    // scene.add( mesh );
 
 	    geometry = new THREE.PlaneGeometry( 50, 50, 2, 1);
-			material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
+			material = new THREE.MeshBasicMaterial( {color: 0x00CC00, side: THREE.DoubleSide} );
 			plane = new THREE.Mesh( geometry, material );
-				var material = new THREE.MeshBasicMaterial({
+				var material1 = new THREE.MeshBasicMaterial({
 					color: 0x0000ff
 				});
 
@@ -40,7 +73,7 @@
 				var segments = 32;
 
 				var circleGeometry = new THREE.CircleGeometry( radius, segments );				
-				var circle1 = new THREE.Mesh( circleGeometry, material );
+				var circle1 = new THREE.Mesh( circleGeometry, material1 );
 				circle1.name = "it worked";
 				circle1.callback = function() { 
 					alert("Your Score is " + score)
@@ -48,27 +81,46 @@
 				circle1.addScore = function(addHitScore) {
 					score = score + addHitScore;
 				}
-				var circle2 = new THREE.Mesh( circleGeometry, material );
+				// circle1.successColor = function(){
+				// 	circle1.material.color = 0x99FF99;
+				// }
+				
+				// circle1.dafaultColor = function(){
+				// 	circle1.material.color = 0xffff00;
+				// }
+				var circle2 = new THREE.Mesh( circleGeometry, material1 );
 				circle2.callback = function() { 
 					alert("Your Score is " + score)
 				}
 				circle2.removeScore = function(removeHitScore) {
 					score = score - removeHitScore;
 				}
-				var circle3 = new THREE.Mesh( circleGeometry, material );
-				var circle4 = new THREE.Mesh( circleGeometry, material );
-				var circle5 = new THREE.Mesh( circleGeometry, material );
-				circle1.position.x = 0;
-				circle1.position.y = 0;
-				circle2.position.x = 10;
-				circle2.position.y = 10;
+				// circle2.failureColor = function(){
+				// 	circle2.material.color = 0xCC0000;
+				// }
+				var circle3 = new THREE.Mesh( circleGeometry, material1 );
+				var circle4 = new THREE.Mesh( circleGeometry, material1 );
+				var circle5 = new THREE.Mesh( circleGeometry, material1 );
+				circles = [circle1, circle2, circle3, circle4, circle5]
+				for (var i = items.length - 1; i >= 0; i--) {
+					circles[i].position.x = items[i][0];
+					circles[i].position.y = items[i][1];
+				};
+				// circle1.position.x = 0;
+				// circle1.position.y = 0;
 
-				circle3.position.x = 10;
-				circle3.position.y = -10;
-				circle4.position.x = -10;
-				circle4.position.y = 10;
-				circle5.position.x = -10;
-				circle5.position.y = -10;
+				// circle2.position.x = 10;
+				// circle2.position.y = 10;
+
+				// circle3.position.x = 10;
+				// circle3.position.y = -10;
+
+				// circle4.position.x = -10;
+				// circle4.position.y = 10;
+
+				// circle5.position.x = -10;
+				// circle5.position.y = -10;
+
 				objects.push( circle1 );
 				objects.push( circle2 );
 				plane.add( circle1 );
@@ -76,12 +128,13 @@
 				plane.add( circle3 );
 				plane.add( circle4 );
 				plane.add( circle5 );
-			scene.add( plane );
+				scene.add( plane );
 
 	    renderer = new THREE.CanvasRenderer();
-	    renderer.setSize( window.innerWidth, window.innerHeight );
+	    renderer.setSize( window.innerWidth, window.innerHeight - 50 );
 
-	    document.body.appendChild( renderer.domElement );
+	    // document.body.appendChild( renderer.domElement );
+	    document.getElementById("app").appendChild(renderer.domElement);
 
 		}
 
@@ -109,14 +162,39 @@
 		    	if(typeof intersects[0].object.addScore === 'function') {
 		        intersects[0].object.addScore(10); 
 		        intersects[0].object.callback();
+		        // intersects[0].object.successColor();
+		        // intersects[0].object.defaultColor();
+
+		        // intersects[0].object.changePosition();
+		        shuffle();
+		        // intersects[0].object.changeColor();
 		      }else if(typeof intersects[0].object.removeScore === 'function'){
 		        intersects[0].object.removeScore(10); 
 		        intersects[0].object.callback();
+		        // intersects[0].object.failureColor();
+		        // intersects[0].object.defaultColor();
+		        shuffle();
 		      }else{
 		        alert("Something Went Wrong!! Please come back later!!");
+		        window.location("start.html");
 		      }
 		        
+		    }else{
+		    	shuffle();
 		    }
+
+
+					
+				function shuffle() {
+					 items = arrayShuffle(items);
+					 for (var i = items.length - 1; i >= 0; i--) {
+					 		plane.remove( circles[i] );
+							circles[i].position.x = items[i][0];
+							circles[i].position.y = items[i][1];
+							plane.add( circles[i] );
+						};
+				}
+
 		                    
 		}
 
@@ -130,6 +208,25 @@
 	    renderer.render( scene, camera );
 
 		}
+
+		function arrayShuffle(array) {
+					  var currentIndex = array.length, temporaryValue, randomIndex ;
+
+					  // While there remain elements to shuffle...
+					  while (0 !== currentIndex) {
+
+					    // Pick a remaining element...
+					    randomIndex = Math.floor(Math.random() * currentIndex);
+					    currentIndex -= 1;
+
+					    // And swap it with the current element.
+					    temporaryValue = array[currentIndex];
+					    array[currentIndex] = array[randomIndex];
+					    array[randomIndex] = temporaryValue;
+					  }
+
+					  return array;
+					}
 
 	</script>
 </body>
