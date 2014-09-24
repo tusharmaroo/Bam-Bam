@@ -1,0 +1,2 @@
+create image populating on random locations.
+make that image produce an alert on click.

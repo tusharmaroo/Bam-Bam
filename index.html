@@ -11,7 +11,8 @@
 	<script type="text/javascript">
 		var scene, camera, renderer;
 		var geometry, material, plane;
-
+		var objects = [];
+		var score = 0;
 		init();
 		animate();
 
@@ -28,7 +29,7 @@
 	    // mesh = new THREE.Mesh( geometry, material );
 	    // scene.add( mesh );
 
-	    geometry = new THREE.PlaneGeometry( 50, 50, 2, 1 );
+	    geometry = new THREE.PlaneGeometry( 50, 50, 2, 1);
 			material = new THREE.MeshBasicMaterial( {color: 0xffff00, side: THREE.DoubleSide} );
 			plane = new THREE.Mesh( geometry, material );
 				var material = new THREE.MeshBasicMaterial({
@@ -40,7 +41,20 @@
 
 				var circleGeometry = new THREE.CircleGeometry( radius, segments );				
 				var circle1 = new THREE.Mesh( circleGeometry, material );
+				circle1.name = "it worked";
+				circle1.callback = function() { 
+					alert("Your Score is " + score)
+				}
+				circle1.addScore = function(addHitScore) {
+					score = score + addHitScore;
+				}
 				var circle2 = new THREE.Mesh( circleGeometry, material );
+				circle2.callback = function() { 
+					alert("Your Score is " + score)
+				}
+				circle2.removeScore = function(removeHitScore) {
+					score = score - removeHitScore;
+				}
 				var circle3 = new THREE.Mesh( circleGeometry, material );
 				var circle4 = new THREE.Mesh( circleGeometry, material );
 				var circle5 = new THREE.Mesh( circleGeometry, material );
@@ -48,12 +62,15 @@
 				circle1.position.y = 0;
 				circle2.position.x = 10;
 				circle2.position.y = 10;
+
 				circle3.position.x = 10;
 				circle3.position.y = -10;
 				circle4.position.x = -10;
 				circle4.position.y = 10;
 				circle5.position.x = -10;
 				circle5.position.y = -10;
+				objects.push( circle1 );
+				objects.push( circle2 );
 				plane.add( circle1 );
 				plane.add( circle2 );
 				plane.add( circle3 );
@@ -66,6 +83,41 @@
 
 	    document.body.appendChild( renderer.domElement );
 
+		}
+
+		// projector
+		var projector = new THREE.Projector();
+
+		document.addEventListener( 'mousedown', onDocumentMouseDown, false);
+
+		function onDocumentMouseDown( event ) {
+    
+		    event.preventDefault();
+		    
+		    var vector = new THREE.Vector3( 
+		        ( event.clientX / window.innerWidth ) * 2 - 1, 
+		        - ( event.clientY / window.innerHeight ) * 2 + 1, 
+		        0.5 );
+		    
+		    projector.unprojectVector( vector, camera );
+		    
+		    var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
+
+		    var intersects = ray.intersectObjects( objects );    
+
+		    if ( intersects.length > 0 ) {
+		    	if(typeof intersects[0].object.addScore === 'function') {
+		        intersects[0].object.addScore(10); 
+		        intersects[0].object.callback();
+		      }else if(typeof intersects[0].object.removeScore === 'function'){
+		        intersects[0].object.removeScore(10); 
+		        intersects[0].object.callback();
+		      }else{
+		        alert("Something Went Wrong!! Please come back later!!");
+		      }
+		        
+		    }
+		                    
 		}
 
 		function animate() {
